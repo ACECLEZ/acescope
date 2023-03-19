@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Camera OCR Example</title>
+  <style>
+    #video {
+      width: 100%;
+      max-width: 640px;
+      height: auto;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Camera OCR Example</h1>
+  <video id="video"></video>
+  <button id="capture-btn">Capture</button>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js"></script>
+  <script>const video = document.getElementById('video');
+const captureBtn = document.getElementById('capture-btn');
+
+// Wait for the camera stream to be ready
+video.addEventListener('loadedmetadata', () => {
+  // Create a canvas element to capture the photo
+  const canvas = document.createElement('canvas');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  
+  // When the capture button is clicked
+  captureBtn.addEventListener('click', () => {
+    canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+    
+    // Extract text from the photo using Tesseract.js
+    Tesseract.recognize(canvas)
+      .then(result => {
+        alert(result.text);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  });
+});
+
+// Request permission to access the camera
+navigator.mediaDevices.getUserMedia({ video: true })
+  .then(stream => {
+    video.srcObject = stream;
+    video.play();
+  })
+  .catch(error => {
+    console.error(error);
+  });
+
+</script>
+</body>
+</html>
